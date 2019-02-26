@@ -51,12 +51,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BigIntegerExtensionTests.cs" />
+    <Compile Include="ByteArrayExtensionTests.cs" />
     <Compile Include="EllipticCurveFiniteFieldPointTests.cs" />
     <Compile Include="EllipticCurveOverFiniteFieldTests.cs" />
     <Compile Include="EllipticCurvePointTests.cs" />
+    <Compile Include="EphemeralPrivateKeyTests.cs" />
     <Compile Include="FiniteFieldElementTests.cs" />
+    <Compile Include="HashTests.cs" />
+    <Compile Include="KeyPairTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Secp256k1Tests.cs" />
+    <Compile Include="SignatureTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
