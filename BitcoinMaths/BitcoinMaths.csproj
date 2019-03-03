@@ -52,6 +52,7 @@
     <Compile Include="Hash.cs" />
     <Compile Include="KeyPair.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PublicKey.cs" />
     <Compile Include="Secp256k1.cs" />
     <Compile Include="Signature.cs" />
   </ItemGroup>

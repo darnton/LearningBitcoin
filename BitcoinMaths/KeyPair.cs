@@ -5,12 +5,12 @@ namespace BitcoinMaths
     public class KeyPair
     {
         internal BigInteger PrivateKey { get; }
-        public EllipticCurveFiniteFieldPoint PublicKey { get; }
+        public PublicKey PublicKey { get; }
 
         public KeyPair(BigInteger secret)
         {
             PrivateKey = secret;
-            PublicKey = PrivateKey * Secp256k1.G;
+            PublicKey = new PublicKey(PrivateKey * Secp256k1.G);
         }
     }
 }
