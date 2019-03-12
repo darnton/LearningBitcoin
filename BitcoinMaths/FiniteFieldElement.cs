@@ -23,6 +23,11 @@ namespace BitcoinMaths
             return new FiniteFieldElement(BigInteger.ModPow(Value, exp, Order), Order);
         }
 
+        public FiniteFieldElement Sqrt()
+        {
+            return this.Pow((Order + 1) / 4);
+        }
+
         public override string ToString()
         {
             return $"{Value} (in F({Order})";

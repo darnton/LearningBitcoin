@@ -156,5 +156,11 @@ namespace BitcoinMathsTest
 
             Assert.AreEqual(c, a / b);
         }
+
+        [TestMethod]
+        public void sqrt()
+        {
+            
+        }
     }
 }

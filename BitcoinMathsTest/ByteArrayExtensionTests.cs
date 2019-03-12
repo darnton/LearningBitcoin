@@ -8,6 +8,7 @@ namespace BitcoinMathsTest
     [TestClass]
     public class ByteArrayExtensionTests
     {
+        #region ToUnsignedBigInteger
         [TestMethod]
         public void ToUnsignedBigInteger_mostSignificantBitSet()
         {
@@ -28,5 +29,6 @@ namespace BitcoinMathsTest
 
             Assert.AreEqual(z, documentHash);
         }
+        #endregion
     }
 }

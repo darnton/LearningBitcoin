@@ -11,8 +11,8 @@ namespace BitcoinMathsTest
         {
             var k = EphemeralPrivateKey_INSECURE.New();
 
-            Assert.IsTrue(k > 0);
-            Assert.IsTrue(k < Secp256k1.P);
+            Assert.IsTrue(k > 0, $"k = {k}");
+            Assert.IsTrue(k < Secp256k1.P, $"k = {k}");
         }
     }
 }
