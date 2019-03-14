@@ -59,6 +59,7 @@
     <Compile Include="FiniteFieldElementTests.cs" />
     <Compile Include="HashTests.cs" />
     <Compile Include="KeyPairTests.cs" />
+    <Compile Include="PrivateKeyTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PublicKeyTests.cs" />
     <Compile Include="Secp256k1Tests.cs" />

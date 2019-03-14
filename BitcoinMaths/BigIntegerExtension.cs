@@ -8,19 +8,25 @@ namespace BitcoinMaths
     {
         public static BigInteger Mod(this BigInteger x, BigInteger mod) => (x % mod + mod) % mod;
 
-        public static byte[] ToByteArrayUnsignedBigEndian(this BigInteger x, int size = 0)
+        public static byte[] ToByteArray(this BigInteger x, ByteArrayFormat format, int size = 0)
         {
-            if (x < 0)
+            var littleEndianBytes = x.ToByteArray();
+            var bigEndianBytes = littleEndianBytes.Reverse().ToArray();
+            if ((format & ByteArrayFormat.Unsigned) == ByteArrayFormat.Unsigned)
             {
-                throw new InvalidOperationException("ToByteArrayUnsignedBigEndian can only be called on positive values.");
+                if (x < 0)
+                {
+                    throw new InvalidOperationException("ByteArrayFormat.Unsigned can only be called on positive values.");
+                }
+                bigEndianBytes = bigEndianBytes.SkipWhile(b => b == 0).ToArray();
             }
-            var result = x.ToByteArray().Reverse().SkipWhile(b => b == 0).ToArray();
-            if(size > result.Length)
+            if (size > bigEndianBytes.Length)
             {
-                var padding = new byte[size - result.Length];
-                result = padding.Concat(result).ToArray();
+                var padding = new byte[size - bigEndianBytes.Length];
+                bigEndianBytes = padding.Concat(bigEndianBytes).ToArray();
             }
-            return result;
+            littleEndianBytes = bigEndianBytes.Reverse().ToArray();
+            return ((format & ByteArrayFormat.BigEndian) > 0) ? bigEndianBytes : littleEndianBytes;
         }
     }
 }

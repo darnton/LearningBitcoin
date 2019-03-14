@@ -4,13 +4,13 @@ namespace BitcoinMaths
 {
     public class KeyPair
     {
-        internal BigInteger PrivateKey { get; }
+        public PrivateKey PrivateKey { get; }
         public PublicKey PublicKey { get; }
 
         public KeyPair(BigInteger secret)
         {
-            PrivateKey = secret;
-            PublicKey = new PublicKey(PrivateKey * Secp256k1.G);
+            PrivateKey = new PrivateKey(secret);
+            PublicKey = new PublicKey(secret * Secp256k1.G);
         }
     }
 }

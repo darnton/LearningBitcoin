@@ -48,7 +48,7 @@ namespace BitcoinMathsTest
 
             var expectedSecString = "0404519fac3d910ca7e7138f7013706f619fa8f033e6ec6e09370ea38cee6a757482b51eab8c27c66e26c858a079bcdf4f1ada34cec420cafc7eac1a42216fb6c4";
 
-            Assert.AreEqual(expectedSecString, Serialisation.GetHexFromBytes(pk.ToUncompressedSecFormat()));
+            Assert.AreEqual(expectedSecString, Serialisation.EncodeAsHex(pk.ToSecFormat(SerialisationFormat.Uncompressed)));
         }
 
         [TestMethod]
@@ -60,7 +60,31 @@ namespace BitcoinMathsTest
 
             var expectedSecString = "0204519fac3d910ca7e7138f7013706f619fa8f033e6ec6e09370ea38cee6a7574";
 
-            Assert.AreEqual(expectedSecString, Serialisation.GetHexFromBytes(pk.ToCompressedSecFormat()));
+            Assert.AreEqual(expectedSecString, Serialisation.EncodeAsHex(pk.ToSecFormat(SerialisationFormat.Compressed)));
+        }
+
+        [TestMethod]
+        public void ToBase58Address_testnetUncompressedResult()
+        {
+            var secret = new BigInteger(5002);
+            var kp = new KeyPair(secret);
+
+            var expectedAddress = "mmTPbXQFxboEtNRkwfh6K51jvdtHLxGeMA";
+            var actualAddress = kp.PublicKey.ToBase58Address(SerialisationFormat.TestNet);
+
+            Assert.AreEqual(expectedAddress, actualAddress);
+        }
+
+        [TestMethod]
+        public void ToBase58Address_mainnetCompressedResult()
+        {
+            var secret = BigInteger.Parse("12345deadbeef", NumberStyles.AllowHexSpecifier);
+            var kp = new KeyPair(secret);
+
+            var expectedAddress = "1F1Pn2y6pDb68E5nYJJeba4TLg2U7B6KF1";
+            var actualAddress = kp.PublicKey.ToBase58Address(SerialisationFormat.Compressed);
+
+            Assert.AreEqual(expectedAddress, actualAddress);
         }
 
         #region Parse

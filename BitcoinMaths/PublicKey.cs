@@ -22,23 +22,37 @@ namespace BitcoinMaths
             return total.X.Value == sig.R;
         }
 
-        public byte[] ToUncompressedSecFormat()
+        public byte[] ToSecFormat(SerialisationFormat format)
+        {
+            return (format & SerialisationFormat.Compressed) == SerialisationFormat.Compressed ?
+                ToCompressedSecFormat() :
+                ToUncompressedSecFormat();
+        }
+
+        private byte[] ToUncompressedSecFormat()
         {
             return (new byte[] { Serialisation.SEC_MARKER_UNCOMPRESSED })
-                .Concat(Point.X.Value.ToByteArrayUnsignedBigEndian(32))
-                .Concat(Point.Y.Value.ToByteArrayUnsignedBigEndian(32))
+                .Concat(Point.X.Value.ToByteArray(ByteArrayFormat.BigEndianUnsigned, 32))
+                .Concat(Point.Y.Value.ToByteArray(ByteArrayFormat.BigEndianUnsigned, 32))
                 .ToArray();
         }
 
-        public byte[] ToCompressedSecFormat()
+        private byte[] ToCompressedSecFormat()
         {
             var markerByte = Point.Y.Value % 2 == 0 ?
                 Serialisation.SEC_MARKER_COMPRESSED_EVEN :
                 Serialisation.SEC_MARKER_COMPRESSED_ODD;
 
             return (new byte[] { markerByte })
-                .Concat(Point.X.Value.ToByteArrayUnsignedBigEndian(32))
+                .Concat(Point.X.Value.ToByteArray(ByteArrayFormat.BigEndianUnsigned, 32))
                 .ToArray();
+        }
+
+        public string ToBase58Address(SerialisationFormat format)
+        {
+            var type = (format & SerialisationFormat.TestNet) > 0 ?
+                Base58CheckType.TESTNET_ADDRESS : Base58CheckType.MAINNET_ADDRESS;
+            return Serialisation.EncodeAsBase58Check(Hash.Hash160(ToSecFormat(format)), type);
         }
 
         public static PublicKey Parse(byte[] secBuffer)
@@ -59,18 +73,25 @@ namespace BitcoinMaths
                 {
                     throw new ArgumentException($"Uncompressed SEC buffer (prefix {marker:x2}) must be {Serialisation.SEC_LENGTH_UNCOMPRESSED} bytes long. {secBuffer.Length} bytes supplied.");
                 }
-
-                x = new FiniteFieldElement(new BigInteger(secBuffer.Skip(1).Take(32).Reverse().Concat(new byte[] { 0 }).ToArray()), Secp256k1.P);
-                y = new FiniteFieldElement(new BigInteger(secBuffer.Skip(33).Take(32).Reverse().Concat(new byte[] { 0 }).ToArray()), Secp256k1.P);
+                x = new FiniteFieldElement(
+                    secBuffer.Segment(1, 32).ToBigInteger(ByteArrayFormat.BigEndianUnsigned),
+                    Secp256k1.P
+                );
+                y = new FiniteFieldElement(
+                    secBuffer.Segment(33, 32).ToBigInteger(ByteArrayFormat.BigEndianUnsigned),
+                    Secp256k1.P
+                );
                 return new PublicKey(new EllipticCurveFiniteFieldPoint(x, y, curve));
             }
-
 
             if (secBuffer.Length != Serialisation.SEC_LENGTH_COMPRESSED)
             {
                 throw new ArgumentException($"Compressed SEC buffer (prefix {marker:x2}) must be {Serialisation.SEC_LENGTH_COMPRESSED} bytes long. {secBuffer.Length} bytes supplied.");
             }
-            x = new FiniteFieldElement(new BigInteger(secBuffer.Skip(1).Take(32).Reverse().Concat(new byte[] { 0 }).ToArray()), Secp256k1.P);
+            x = new FiniteFieldElement(
+                secBuffer.Segment(1, 32).ToBigInteger(ByteArrayFormat.BigEndianUnsigned),
+                Secp256k1.P
+            );
             var alpha = x.Pow(3) + curve.B;
             var beta = alpha.Sqrt();
             y = (marker == 2 ^ beta.Value % 2 == 0) ?

@@ -32,5 +32,10 @@ namespace BitcoinMathsTest
 
             Assert.AreEqual(expectedHex, actualHex);
         }
+
+        [TestMethod]
+        public void Hash160_result()
+        {
+        }
     }
 }
