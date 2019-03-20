@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Numerics;
 using System.Text;
 
 namespace BitcoinMaths
@@ -24,7 +23,7 @@ namespace BitcoinMaths
         public const int SEC_LENGTH_UNCOMPRESSED = 65;
         public const int SEC_LENGTH_COMPRESSED = 33;
 
-        public static byte[] GetBytesFromHex(string hex)
+        public static byte[] GetBytesFromHex(this string hex)
         {
             if (hex.Length % 2 != 0)
             {
@@ -36,12 +35,12 @@ namespace BitcoinMaths
                      .ToArray();
         }
 
-        public static string EncodeAsHex(byte[] buffer)
+        public static string EncodeAsHex(this byte[] buffer)
         {
             return string.Join("", buffer.Select(b => b.ToString("x2")));
         }
 
-        public static string EncodeAsBase58(byte[] buffer)
+        public static string EncodeAsBase58(this byte[] buffer)
         {
             var base58 = new StringBuilder();
             var leadingZeroesCount = buffer.TakeWhile(b => b == 0).Count();
@@ -59,7 +58,7 @@ namespace BitcoinMaths
             return base58.ToString();
         }
 
-        public static string EncodeAsBase58Check(byte[] addressBytes, Base58CheckType type)
+        public static string EncodeAsBase58Check(this byte[] addressBytes, Base58CheckType type)
         {
             var prefix = GetBase58CheckPrefix(type);
             var prefixedLength = prefix.Length + addressBytes.Length;
