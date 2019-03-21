@@ -9,16 +9,31 @@ namespace BitcoinTest
     public class ScriptTests
     {
         [TestMethod]
-        public void Parse_Length()
+        public void Parse_outputCommandText()
         {
-            var scriptHex = "6a47304402207899531a52d59a6de200179928ca900254a36b8dff8bb75f5f5d71b1cdc26125022008b422690b8461cb52c3cc30330b23d574351872b7c361e9aae3649071c1a7160121035d5c93d9ac96881f19ba1f686f15f009ded7c62efe85a872e6a19b43c15a2937";
+            var scriptHex = "1976a914ab0c0b2e98b1ab6dbf67d4750b0a56244948a87988ac";
             var reader = new BinaryReader(new MemoryStream(scriptHex.GetBytesFromHex()));
 
             var script = Script.Parse(reader);
-            var expectedLength = 106;
-            var actualLength = script.Length;
+            var expectedText = "OP_DUP OP_HASH160 ab0c0b2e98b1ab6dbf67d4750b0a56244948a879 OP_EQUALVERIFY OP_CHECKSIG";
+            var actualText = script.ToString();
 
-            Assert.AreEqual(expectedLength, actualLength);
+            Assert.AreEqual(expectedText, actualText);
+        }
+
+        [TestMethod]
+        public void Serialise_roundTrip()
+        {
+            var scriptHex = "1976a914ab0c0b2e98b1ab6dbf67d4750b0a56244948a87988ac";
+            var reader = new BinaryReader(new MemoryStream(scriptHex.GetBytesFromHex()));
+            var script = Script.Parse(reader);
+
+            var actualBytes = new byte[26];
+            script.Serialise(new BinaryWriter(new MemoryStream(actualBytes)));
+
+            var actualText = actualBytes.EncodeAsHex();
+
+            Assert.AreEqual(scriptHex, actualText);
         }
     }
 }
