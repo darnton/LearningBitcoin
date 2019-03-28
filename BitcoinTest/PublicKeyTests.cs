@@ -2,9 +2,10 @@
 using System.Globalization;
 using System.Numerics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Bitcoin;
 using BitcoinMaths;
 
-namespace BitcoinMathsTest
+namespace BitcoinTest
 {
     [TestClass]
     public class PublicKeyTests

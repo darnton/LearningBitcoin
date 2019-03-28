@@ -4,6 +4,7 @@ using System.Text;
 
 namespace BitcoinMaths
 {
+    //TODO: Find all references and use extension methods
     public static class Serialisation
     {
         public const byte ADDRESS_MARKER_TESTNET = 111;

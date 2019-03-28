@@ -1,7 +1,8 @@
 ﻿using System.Linq;
 using System.Numerics;
+using BitcoinMaths;
 
-namespace BitcoinMaths
+namespace Bitcoin
 {
     public class PrivateKey
     {

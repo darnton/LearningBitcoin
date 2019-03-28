@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using BitcoinMaths;
 
@@ -8,11 +9,16 @@ namespace Bitcoin
 {
     public class Script
     {
-        private List<byte[]> Commands { get; }
+        public List<byte[]> Commands { get; }
 
         private Script(List<byte[]> commands)
         {
             Commands = commands;
+        }
+
+        public static Script operator +(Script a, Script b)
+        {
+            return new Script(a.Commands.Concat(b.Commands).ToList());
         }
 
         public void Serialise(BinaryWriter writer)

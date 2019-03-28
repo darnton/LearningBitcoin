@@ -4,6 +4,6 @@ namespace Bitcoin
 {
     public interface ITxRepo
     {
-        Task<Transaction> FetchAsync(string txId, Network network, bool force);
+        Task<Transaction> FetchAsync(string txId, Network network = Network.MainNet, bool force = false);
     }
 }

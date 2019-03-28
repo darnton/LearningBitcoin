@@ -1,9 +1,10 @@
 ﻿using System.Globalization;
 using System.Numerics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Bitcoin;
 using BitcoinMaths;
 
-namespace BitcoinMathsTest
+namespace BitcoinTest
 {
     [TestClass]
     public class SignatureTests
@@ -41,6 +42,19 @@ namespace BitcoinMathsTest
             var actualDerBytes = sig.ToDerFormat();
 
             CollectionAssert.AreEqual(expectedDerBytes, actualDerBytes);
+        }
+
+        [TestMethod]
+        public void Parse_result()
+        {
+            var expectedR = BigInteger.Parse("002b698a0f0a4041b77e63488ad48c23e8e8838dd1fb7520408b121697b782ef22", NumberStyles.AllowHexSpecifier);
+            var expectedS = BigInteger.Parse("00bb14e602ef9e3f872e25fad328466b34e6734b7a0fcd58b1eb635447ffae8cb9", NumberStyles.AllowHexSpecifier);
+            
+            var derBytes = Serialisation.GetBytesFromHex("304502202b698a0f0a4041b77e63488ad48c23e8e8838dd1fb7520408b121697b782ef22022100bb14e602ef9e3f872e25fad328466b34e6734b7a0fcd58b1eb635447ffae8cb9");
+            var sig = Signature.Parse(derBytes);
+
+            Assert.AreEqual(expectedR, sig.R);
+            Assert.AreEqual(expectedS, sig.S);
         }
     }
 }

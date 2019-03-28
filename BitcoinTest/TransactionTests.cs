@@ -51,7 +51,7 @@ namespace BitcoinTest
         {
             var reader = new BinaryReader(new MemoryStream(TEST_TX_HEX.GetBytesFromHex()));
 
-            var tx = Transaction.Parse(reader);
+            var tx = Transaction.Parse(reader, new TxRepoBlockchainDotInfo());
             var expectedVersion = (uint)1;
             var actualVersion = tx.Version;
             var expectedInputCount = 4;
@@ -65,6 +65,11 @@ namespace BitcoinTest
             Assert.AreEqual(expectedInputCount, actualInputCount);
             Assert.AreEqual(expectedOutputCount, actualOutputCount);
             Assert.AreEqual(expectedLocktime, actualLocktime);
+        }
+
+        [TestMethod]
+        public void Fee_()
+        {
         }
     }
 }

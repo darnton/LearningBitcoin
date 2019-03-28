@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using BitcoinMaths;
 
 namespace Bitcoin
 {
-    public class TxRepoProgrammingBitcoinDotCom : ITxRepo
+    public class TxRepoBlockchainDotInfo : ITxRepo
     {
         private static Dictionary<string, Transaction> TxCache = new Dictionary<string, Transaction>();
 
@@ -14,13 +15,13 @@ namespace Bitcoin
         {
             if (force || !TxCache.ContainsKey(txId))
             {
-                var subdomain = (network == Network.TestNet) ? "testnet" : "mainnet";
-                var url = $"http://{subdomain}.programmingbitcoin.com/tx/{txId}.hex";
+                var url = $"https://blockchain.info/rawtx/{txId}?format=hex";
                 var client = new HttpClient();
                 var txBytes = (await client.GetStringAsync(url)).GetBytesFromHex();
                 var tx = Transaction.Parse(new BinaryReader(new MemoryStream(txBytes)), this);
 
-                if (tx.Id != txId)
+                var expectedTxId = txId.GetBytesFromHex().Reverse().ToArray().EncodeAsHex();
+                if (tx.Id != expectedTxId)
                 {
                     throw new ValidationException($"Transaction id doesn't match. Expecting {txId}; was {tx.Id}.");
                 }

@@ -3,6 +3,7 @@ using System.Text;
 
 namespace BitcoinMaths
 {
+    //TODO: Find all references and use extension methods
     public static class Hash
     {
         public static byte[] Sha256(this byte[] buffer)

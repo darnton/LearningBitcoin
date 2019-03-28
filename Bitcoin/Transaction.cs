@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Linq;
 using BitcoinMaths;
 
 namespace Bitcoin
@@ -28,6 +29,15 @@ namespace Bitcoin
             }
         }
 
+        public ulong Fee
+        {
+            get
+            {
+                return 0;
+                //return (ulong)(Inputs.Sum(i => (long)i.Amount) - Outputs.Sum(o => (long)o.Amount));
+            }
+        }
+
         public void Serialise(BinaryWriter writer)
         {
             writer.Write(Version);
@@ -44,14 +54,14 @@ namespace Bitcoin
             writer.Write(Locktime);
         }
 
-        public static Transaction Parse(BinaryReader reader)
+        public static Transaction Parse(BinaryReader reader, ITxRepo txRepo)
         {
             var version = reader.ReadUInt32();
             var inputCount = reader.ReadVarInt();
             var inputs = new TxInput[inputCount];
             for (ulong i = 0; i < inputCount; i++)
             {
-                inputs[i] = TxInput.Parse(reader);
+                inputs[i] = TxInput.Parse(reader, txRepo);
             }
             var outputCount = reader.ReadVarInt();
             var outputs = new TxOutput[outputCount];

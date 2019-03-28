@@ -1,6 +1,8 @@
-﻿using System.Numerics;
+﻿using System.Linq;
+using System.Numerics;
+using BitcoinMaths;
 
-namespace BitcoinMaths
+namespace Bitcoin
 {
     public class Signature
     {
@@ -51,6 +53,23 @@ namespace BitcoinMaths
         public override string ToString()
         {
             return $"Signature({R}, {S})";
+        }
+
+        public static Signature Parse(byte[] derBuffer)
+        {
+            var totalLength = derBuffer[1];
+            if (derBuffer.Length != totalLength + 2)
+            {
+                throw new ParsingException($"Failed to parse Signature DER buffer. Expected {totalLength} bytes. Buffer contained {derBuffer.Length - 1}.");
+            }
+            var rLength = derBuffer[3];
+            var sLength = derBuffer[5 + rLength];
+            var rBytes = derBuffer.Skip(4).Take(rLength).ToArray();
+            var r = rBytes.ToBigInteger(ByteArrayFormat.BigEndianUnsigned);
+            var sBytes = derBuffer.Skip(6 + rLength).Take(sLength).ToArray();
+            var s = sBytes.ToBigInteger(ByteArrayFormat.BigEndianUnsigned);
+
+            return new Signature(r, s);
         }
     }
 }

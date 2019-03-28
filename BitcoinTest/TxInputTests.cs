@@ -20,7 +20,7 @@ namespace BitcoinTest
                 "feffffff";
             var reader = new BinaryReader(new MemoryStream(inputHex.GetBytesFromHex()));
 
-            var input = TxInput.Parse(reader);
+            var input = TxInput.Parse(reader, new TxRepoBlockchainDotInfo());
             var expectedTxId = new BigInteger((txIdHex + "00").GetBytesFromHex());
             var actualTxId = input.PreviousTxId;
             var expectedTxIndex = (uint)1;
