@@ -106,6 +106,44 @@ namespace BitcoinTest
         }
         #endregion
 
+        private void PerformEmptyCheck(Func<Stack<byte[]>, bool> operation)
+        {
+            var stack = new Stack<byte[]>();
+
+            var result = operation(stack);
+
+            Assert.IsFalse(result);
+            Assert.AreEqual(0, stack.Count);
+        }
+
+        [TestMethod]
+        public void OP_VERIFY_one()
+        {
+            var stack = new Stack<byte[]>();
+            stack.Push(StackMachine.EncodeNumber(1));
+
+            var result = StackMachine.OP_VERIFY(stack);
+
+            Assert.IsTrue(result);
+        }
+
+        [TestMethod]
+        public void OP_VERIFY_zero()
+        {
+            var stack = new Stack<byte[]>();
+            stack.Push(StackMachine.EncodeNumber(0));
+
+            var result = StackMachine.OP_VERIFY(stack);
+
+            Assert.IsFalse(result);
+        }
+
+        [TestMethod]
+        public void OP_VERIFY_empty()
+        {
+            PerformEmptyCheck(StackMachine.OP_VERIFY);
+        }
+
         [TestMethod]
         public void OP_DUP_true()
         {
@@ -123,12 +161,68 @@ namespace BitcoinTest
         [TestMethod]
         public void OP_DUP_empty()
         {
-            var stack = new Stack<byte[]>();
+            PerformEmptyCheck(StackMachine.OP_DUP);
+        }
 
-            var result = StackMachine.OP_DUP(stack);
+        [TestMethod]
+        public void OP_EQUAL_areEqual()
+        {
+            var stack = new Stack<byte[]>();
+            stack.Push(BitConverter.GetBytes(12345));
+            stack.Push(BitConverter.GetBytes(12345));
+
+            var result = StackMachine.OP_EQUAL(stack);
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(1, StackMachine.DecodeNumber(stack.Peek()));
+        }
+
+        [TestMethod]
+        public void OP_EQUAL_notEqual()
+        {
+            var stack = new Stack<byte[]>();
+            stack.Push(StackMachine.EncodeNumber(12345));
+            stack.Push(StackMachine.EncodeNumber(54321));
+
+            var result = StackMachine.OP_EQUAL(stack);
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(0, StackMachine.DecodeNumber(stack.Peek()));
+        }
+
+        [TestMethod]
+        public void OP_EQUAL_oneElement()
+        {
+            var stack = new Stack<byte[]>();
+            stack.Push(BitConverter.GetBytes(12345));
+
+            var result = StackMachine.OP_EQUAL(stack);
 
             Assert.IsFalse(result);
-            Assert.AreEqual(0, stack.Count);
+        }
+
+        [TestMethod]
+        public void OP_EQUALVERIFY_areEqual()
+        {
+            var stack = new Stack<byte[]>();
+            stack.Push(BitConverter.GetBytes(12345));
+            stack.Push(BitConverter.GetBytes(12345));
+
+            var result = StackMachine.OP_EQUALVERIFY(stack);
+
+            Assert.IsTrue(result);
+        }
+
+        [TestMethod]
+        public void OP_EQUALVERIFY_notEqual()
+        {
+            var stack = new Stack<byte[]>();
+            stack.Push(StackMachine.EncodeNumber(12345));
+            stack.Push(StackMachine.EncodeNumber(54321));
+
+            var result = StackMachine.OP_EQUALVERIFY(stack);
+
+            Assert.IsFalse(result);
         }
 
         [TestMethod]
@@ -156,12 +250,7 @@ namespace BitcoinTest
         [TestMethod]
         public void OP_HASH256_empty()
         {
-            var stack = new Stack<byte[]>();
-
-            var result = StackMachine.OP_HASH256(stack);
-
-            Assert.IsFalse(result);
-            Assert.AreEqual(0, stack.Count);
+            PerformEmptyCheck(StackMachine.OP_HASH256);
         }
 
         [TestMethod]
@@ -184,12 +273,7 @@ namespace BitcoinTest
         [TestMethod]
         public void OP_HASH160_empty()
         {
-            var stack = new Stack<byte[]>();
-
-            var result = StackMachine.OP_HASH160(stack);
-
-            Assert.IsFalse(result);
-            Assert.AreEqual(0, stack.Count);
+            PerformEmptyCheck(StackMachine.OP_HASH160);
         }
 
         [TestMethod]
@@ -206,6 +290,18 @@ namespace BitcoinTest
 
             Assert.IsTrue(result);
             Assert.IsTrue(StackMachine.DecodeNumber(stack.Peek()) > 0);
+        }
+
+        [TestMethod]
+        public void OP_CHECKSIG_oneElement()
+        {
+            var stack = new Stack<byte[]>();
+            var z = BigInteger.Zero;
+            stack.Push(BitConverter.GetBytes(12345));
+
+            var result = StackMachine.OP_CHECKSIG(stack, z);
+
+            Assert.IsFalse(result);
         }
     }
 }

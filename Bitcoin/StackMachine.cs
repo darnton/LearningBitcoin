@@ -134,7 +134,7 @@ namespace Bitcoin
                     var result = operation(stack);
                 }
             }
-            return (stack.Count > 0 && stack.Peek()[0] > 0);
+            return (stack.Count > 0 && DecodeNumber(stack.Peek()) > 0);
         }
 
         public static byte[] EncodeNumber(BigInteger number)
@@ -209,7 +209,14 @@ namespace Bitcoin
         public static bool OP_NOTIF(Stack<byte[]> stack, List<byte[]> commands) { return false; }
         public static bool OP_ELSE(Stack<byte[]> stack) { return false; }
         public static bool OP_ENDIF(Stack<byte[]> stack) { return false; }
-        public static bool OP_VERIFY(Stack<byte[]> stack) { return false; }
+
+        public static bool OP_VERIFY(Stack<byte[]> stack)
+        {
+            if (stack.Count < 1) return false;
+
+            return !(DecodeNumber(stack.Pop()) == 0);
+        }
+
         public static bool OP_RETURN(Stack<byte[]> stack) { return false; }
         public static bool OP_TOALTSTACK(Stack<byte[]> stack) { return false; }
         public static bool OP_FROMALTSTACK(Stack<byte[]> stack) { return false; }
@@ -239,8 +246,22 @@ namespace Bitcoin
         public static bool OP_SWAP(Stack<byte[]> stack) { return false; }
         public static bool OP_TUCK(Stack<byte[]> stack) { return false; }
         public static bool OP_SIZE(Stack<byte[]> stack) { return false; }
-        public static bool OP_EQUAL(Stack<byte[]> stack) { return false; }
-        public static bool OP_EQUALVERIFY(Stack<byte[]> stack) { return false; }
+
+        public static bool OP_EQUAL(Stack<byte[]> stack)
+        {
+            if (stack.Count < 2) return false;
+
+            var element1 = DecodeNumber(stack.Pop());
+            var element2 = DecodeNumber(stack.Pop());
+            stack.Push(EncodeNumber(element1 == element2 ? 1 : 0));
+            return true;
+        }
+
+        public static bool OP_EQUALVERIFY(Stack<byte[]> stack)
+        {
+            return OP_EQUAL(stack) && OP_VERIFY(stack);
+        }
+
         public static bool OP_1ADD(Stack<byte[]> stack) { return false; }
         public static bool OP_1SUB(Stack<byte[]> stack) { return false; }
         public static bool OP_NEGATE(Stack<byte[]> stack) { return false; }
@@ -285,7 +306,10 @@ namespace Bitcoin
         public static bool OP_CODESEPARATOR(Stack<byte[]> stack) { return false; }
         public static bool OP_CHECKSIG(Stack<byte[]> stack) { return false; }
 
-        public static bool OP_CHECKSIG(Stack<byte[]> stack, BigInteger z) {
+        public static bool OP_CHECKSIG(Stack<byte[]> stack, BigInteger z)
+        {
+            if (stack.Count < 2) return false;
+
             var pkBytes = stack.Pop();
             var pk = PublicKey.Parse(pkBytes);
             var sigBytes = stack.Pop();
